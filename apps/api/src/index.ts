@@ -1,5 +1,6 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
+import type { Context } from "hono";
 import { logger } from "hono/logger";
 import { cors } from "hono/cors";
 import { env } from "hono/adapter";
@@ -13,38 +14,47 @@ type Env = {
 
 const app = new Hono<{ Bindings: Env }>();
 
-// Database clients - initialized on first request
-let postgres: Pool | null = null;
-let redis: Redis | null = null;
-
-// Middleware - initialize database clients once
-app.use("*", async (c, next) => {
-  if (!postgres || !redis) {
-    const { DATABASE_URL, REDIS_URL } = env<Env>(c);
-
-    if (!DATABASE_URL) {
-      throw new Error("DATABASE_URL environment variable is required");
+/**
+ * Get PostgreSQL connection pool
+ * Note: In Node.js, pool is reused. In Cloudflare Workers, use D1 or Hyperdrive instead.
+ */
+const getPostgres = (() => {
+  let instance: Pool | null = null;
+  return (c: Context) => {
+    if (!instance) {
+      const { DATABASE_URL } = env<Env>(c);
+      if (!DATABASE_URL) {
+        throw new Error("DATABASE_URL environment variable is required");
+      }
+      instance = new Pool({ connectionString: DATABASE_URL });
     }
+    return instance;
+  };
+})();
 
-    if (!REDIS_URL) {
-      throw new Error("REDIS_URL environment variable is required");
+/**
+ * Get Redis client
+ * Note: In Node.js, client is reused. In Cloudflare Workers, use KV or Durable Objects instead.
+ */
+const getRedis = (() => {
+  let instance: Redis | null = null;
+  return (c: Context) => {
+    if (!instance) {
+      const { REDIS_URL } = env<Env>(c);
+      if (!REDIS_URL) {
+        throw new Error("REDIS_URL environment variable is required");
+      }
+      instance = new Redis(REDIS_URL, {
+        maxRetriesPerRequest: 3,
+        retryStrategy: (times) => {
+          if (times > 3) return null;
+          return Math.min(times * 50, 2000);
+        },
+      });
     }
-
-    postgres = new Pool({
-      connectionString: DATABASE_URL,
-    });
-
-    redis = new Redis(REDIS_URL, {
-      maxRetriesPerRequest: 3,
-      retryStrategy: (times) => {
-        if (times > 3) return null;
-        return Math.min(times * 50, 2000);
-      },
-    });
-  }
-
-  await next();
-});
+    return instance;
+  };
+})();
 
 app.use("*", logger());
 app.use(
@@ -64,37 +74,35 @@ app.get("/health", async (c) => {
   };
 
   // Check PostgreSQL
-  if (postgres) {
-    try {
-      const result = await postgres.query("SELECT NOW()");
-      checks.postgres = {
-        status: "ok",
-        message: `Connected - ${result.rows[0].now}`,
-      };
-    } catch (error) {
-      checks.postgres = {
-        status: "error",
-        message: error instanceof Error ? error.message : "Connection failed",
-      };
-    }
+  try {
+    const postgres = getPostgres(c);
+    const result = await postgres.query("SELECT NOW()");
+    checks.postgres = {
+      status: "ok",
+      message: `Connected - ${result.rows[0].now}`,
+    };
+  } catch (error) {
+    checks.postgres = {
+      status: "error",
+      message: error instanceof Error ? error.message : "Connection failed",
+    };
   }
 
   // Check Redis
-  if (redis) {
-    try {
-      await redis.ping();
-      const info = await redis.info("server");
-      const version = info.match(/redis_version:([^\r\n]+)/)?.[1] || "unknown";
-      checks.redis = {
-        status: "ok",
-        message: `Connected - Redis ${version}`,
-      };
-    } catch (error) {
-      checks.redis = {
-        status: "error",
-        message: error instanceof Error ? error.message : "Connection failed",
-      };
-    }
+  try {
+    const redis = getRedis(c);
+    await redis.ping();
+    const info = await redis.info("server");
+    const version = info.match(/redis_version:([^\r\n]+)/)?.[1] || "unknown";
+    checks.redis = {
+      status: "ok",
+      message: `Connected - Redis ${version}`,
+    };
+  } catch (error) {
+    checks.redis = {
+      status: "error",
+      message: error instanceof Error ? error.message : "Connection failed",
+    };
   }
 
   const allOk = Object.values(checks).every((check) => check.status === "ok");
