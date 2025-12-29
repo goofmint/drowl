@@ -2,8 +2,28 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { cors } from "hono/cors";
+import { Pool } from "pg";
+import Redis from "ioredis";
 
 const app = new Hono();
+
+// Database clients
+const postgres = new Pool({
+  connectionString:
+    process.env.DATABASE_URL ||
+    "postgresql://drowl:drowl_dev_password@localhost:5432/drowl",
+});
+
+const redis = new Redis(
+  process.env.REDIS_URL || "redis://:drowl_dev_password_redis@localhost:6379",
+  {
+    maxRetriesPerRequest: 3,
+    retryStrategy: (times) => {
+      if (times > 3) return null;
+      return Math.min(times * 50, 2000);
+    },
+  }
+);
 
 // Middleware
 app.use("*", logger());
@@ -16,12 +36,51 @@ app.use(
 );
 
 // Health check endpoint
-app.get("/health", (c) => {
+app.get("/health", async (c) => {
+  const checks = {
+    api: { status: "ok", message: "API is running" },
+    postgres: { status: "unknown", message: "" },
+    redis: { status: "unknown", message: "" },
+  };
+
+  // Check PostgreSQL
+  try {
+    const result = await postgres.query("SELECT NOW()");
+    checks.postgres = {
+      status: "ok",
+      message: `Connected - ${result.rows[0].now}`,
+    };
+  } catch (error) {
+    checks.postgres = {
+      status: "error",
+      message: error instanceof Error ? error.message : "Connection failed",
+    };
+  }
+
+  // Check Redis
+  try {
+    await redis.ping();
+    const info = await redis.info("server");
+    const version = info.match(/redis_version:([^\r\n]+)/)?.[1] || "unknown";
+    checks.redis = {
+      status: "ok",
+      message: `Connected - Redis ${version}`,
+    };
+  } catch (error) {
+    checks.redis = {
+      status: "error",
+      message: error instanceof Error ? error.message : "Connection failed",
+    };
+  }
+
+  const allOk = Object.values(checks).every((check) => check.status === "ok");
+
   return c.json({
-    status: "ok",
+    status: allOk ? "ok" : "degraded",
     service: "drowl-api",
     version: "0.1.0",
     timestamp: new Date().toISOString(),
+    checks,
   });
 });
 

@@ -119,24 +119,24 @@ For faster hot-reload during development:
 # 1. Install dependencies
 pnpm install
 
-# 2. Start only infrastructure services
+# 2. Start infrastructure services (PostgreSQL, Redis, MinIO)
 cd infra/docker
-docker-compose up postgres redis minio -d
+docker-compose -f docker-compose.dev.yml up -d
 
-# 3. Run migrations
-cd ../../packages/db
-pnpm migrate:up
-
-# 4. Start dev servers (with hot-reload)
+# 3. Start dev servers (with hot-reload)
 cd ../..
 pnpm dev
 ```
 
 This starts applications with hot module replacement:
-- **API**: http://localhost:3001
+- **API**: http://localhost:3001 (or https://drowl.test/api)
 - **Worker**: http://localhost:3002
-- **UI**: http://localhost:3000
+- **UI**: http://localhost:3000 (or https://drowl.test)
 - **Landing**: http://localhost:4321
+
+**Note**: nginx reverse proxy is also available at https://drowl.test
+
+Database migrations run automatically when starting the infrastructure.
 
 To start individual applications:
 
@@ -145,6 +145,13 @@ pnpm dev:api      # API only
 pnpm dev:worker   # Worker only
 pnpm dev:ui       # UI only
 pnpm dev:landing  # Landing only
+```
+
+To stop infrastructure:
+
+```bash
+cd infra/docker
+docker-compose -f docker-compose.dev.yml down
 ```
 
 ## Development Commands

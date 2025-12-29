@@ -27,7 +27,7 @@
 
 ### Principle I: OSS-First Architecture ✅ PASS
 - docker-compose.ymlで完全に動作する構成を実現
-- Cloudflare依存（Hono）はNode.jsで実行可能
+- Cloudflare依存（Hono）はNode.jsで実行可能（wrangler devで起動）
 
 ### Principle II: Plugin-Based Extensibility ✅ PASS
 - packages/plugin-sdkでManifest型定義とBasePluginクラスを提供
