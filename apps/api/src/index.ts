@@ -2,18 +2,29 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { cors } from "hono/cors";
+import { env as getEnv } from "hono/adapter";
 import { Pool } from "pg";
 import Redis from "ioredis";
-import { env } from "./config.js";
+import type { Env } from "./config.js";
+import { validateEnv } from "./config.js";
 
-const app = new Hono();
+const app = new Hono<{ Bindings: Env }>();
 
-// Database clients
-const postgres = new Pool({
-  connectionString: env.DATABASE_URL,
+// Initialize database clients using a dummy context to get env vars
+// In production, these would be initialized per-request or using connection pooling
+let postgres: Pool;
+let redis: Redis;
+
+// Startup initialization - get env vars without context
+// Note: In Node.js, hono/adapter's env() falls back to process.env
+const startupEnv = getEnv<Env>({} as any);
+validateEnv(startupEnv);
+
+postgres = new Pool({
+  connectionString: startupEnv.DATABASE_URL,
 });
 
-const redis = new Redis(env.REDIS_URL, {
+redis = new Redis(startupEnv.REDIS_URL, {
   maxRetriesPerRequest: 3,
   retryStrategy: (times) => {
     if (times > 3) return null;
@@ -113,8 +124,8 @@ api.get("/plugins", (c) => {
 });
 
 // Start server
-const port = Number(env.API_PORT || "3001");
-const host = env.API_HOST || "0.0.0.0";
+const port = Number(startupEnv.API_PORT || "3001");
+const host = startupEnv.API_HOST || "0.0.0.0";
 
 console.log(`🚀 drowl API server starting on ${host}:${port}`);
 
