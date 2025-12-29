@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 interface HealthCheck {
   status: string;
-  message: string;
+  message?: string;
 }
 
 interface HealthResponse {
@@ -191,9 +191,11 @@ function App() {
                       {getStatusEmoji(check.status)} {check.status}
                     </span>
                   </div>
-                  <div style={{ fontSize: "0.875rem", color: "#6b7280" }}>
-                    {check.message}
-                  </div>
+                  {check.message && (
+                    <div style={{ fontSize: "0.875rem", color: "#6b7280" }}>
+                      {check.message}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
