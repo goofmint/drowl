@@ -43,7 +43,7 @@ Dockerではnginxリバースプロキシを使用し、`https://drowl.test`でU
 
 ### User Story 3 - Code Quality Gates (Priority: P3)
 
-開発者がコミット前にLint・型チェックを実行し、品質基準を満たすコードのみをコミットできる。
+開発者がコミット前にLint・型チェック・フォーマットを実行し、品質基準を満たすコードのみをコミットできる。
 
 **Why this priority**: 憲章の「Quality Gates」に準拠するため。早期に品質問題を検出することで、レビューコストを削減。
 
@@ -53,7 +53,8 @@ Dockerではnginxリバースプロキシを使用し、`https://drowl.test`でU
 
 1. **Given** TypeScriptコードに型エラーがある状態、**When** `pnpm typecheck`を実行、**Then** エラーが表示されビルドが失敗する
 2. **Given** ESLintルールに違反するコードがある状態、**When** `pnpm lint`を実行、**Then** 違反箇所が表示される
-3. **Given** すべてのチェックがパスした状態、**When** `git commit`を実行、**Then** pre-commitフックが通過しコミットが成功する
+3. **Given** コードフォーマットが正しくない状態、**When** `pnpm format:check`を実行、**Then** フォーマット違反が検出される（exit code非0）
+4. **Given** すべてのチェックがパスした状態、**When** `git commit`を実行、**Then** pre-commitフックが通過しコミットが成功する
 
 ---
 
@@ -93,7 +94,7 @@ Dockerではnginxリバースプロキシを使用し、`https://drowl.test`でU
 
 - **SC-001**: 開発者が`git clone`から`docker-compose up && pnpm dev`でローカル環境を起動するまで5分以内に完了できる
 - **SC-002**: すべてのディレクトリにREADME.mdが配置され、迷わず目的のファイルを特定できる（新規開発者のオンボーディング時間を50%削減）
-- **SC-003**: `pnpm lint`・`pnpm typecheck`が全ワークスペースで実行され、エラーがゼロで完了する
+- **SC-003**: `pnpm lint`・`pnpm typecheck`・`pnpm format:check`が全ワークスペースで実行され、エラーがゼロで完了する
 - **SC-004**: 憲章で定義された7つのコア原則のうち、Principle I「OSS-First Architecture」がdocker-compose.ymlの存在により検証可能である
 - **SC-005**: 型定義（Event, Identity, Keyword）が`packages/core`で定義され、apps/api, apps/workerから参照可能である（型の一元管理が機能している）
 
