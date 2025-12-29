@@ -4,23 +4,16 @@ import { logger } from "hono/logger";
 import { cors } from "hono/cors";
 import { Pool } from "pg";
 import Redis from "ioredis";
+import { env } from "./config.js";
 
 const app = new Hono();
 
 // Database clients
-if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL environment variable is required");
-}
-
-if (!process.env.REDIS_URL) {
-  throw new Error("REDIS_URL environment variable is required");
-}
-
 const postgres = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: env.DATABASE_URL,
 });
 
-const redis = new Redis(process.env.REDIS_URL, {
+const redis = new Redis(env.REDIS_URL, {
   maxRetriesPerRequest: 3,
   retryStrategy: (times) => {
     if (times > 3) return null;
@@ -120,8 +113,8 @@ api.get("/plugins", (c) => {
 });
 
 // Start server
-const port = Number(process.env.API_PORT) || 3001;
-const host = process.env.API_HOST || "0.0.0.0";
+const port = Number(env.API_PORT || "3001");
+const host = env.API_HOST || "0.0.0.0";
 
 console.log(`🚀 drowl API server starting on ${host}:${port}`);
 
