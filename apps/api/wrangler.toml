@@ -1,0 +1,14 @@
+name = "drowl-api"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+
+[env.production]
+name = "drowl-api"
+routes = [
+  { pattern = "api.drowl.dev/*", zone_name = "drowl.dev" }
+]
+vars = { NODE_ENV = "production" }
+
+[env.development]
+name = "drowl-api-dev"
+vars = { NODE_ENV = "development" }
