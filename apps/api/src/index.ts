@@ -22,14 +22,10 @@ const app = new Hono<{ Bindings: Env }>();
 const getPostgres = (() => {
   let instance: Pool | null = null;
   return (c: Context) => {
-    if (instance) {
-      return instance;
-    }
+    if (instance) return instance;
 
     const { DATABASE_URL } = env<Env>(c);
-    if (!DATABASE_URL) {
-      throw new Error("DATABASE_URL environment variable is required");
-    }
+    if (!DATABASE_URL) throw new Error("DATABASE_URL environment variable is required");
 
     instance = new Pool({ connectionString: DATABASE_URL });
     return instance;
@@ -43,14 +39,10 @@ const getPostgres = (() => {
 const getRedis = (() => {
   let instance: Redis | null = null;
   return (c: Context) => {
-    if (instance) {
-      return instance;
-    }
+    if (instance) return instance;
 
     const { REDIS_URL } = env<Env>(c);
-    if (!REDIS_URL) {
-      throw new Error("REDIS_URL environment variable is required");
-    }
+    if (!REDIS_URL) throw new Error("REDIS_URL environment variable is required");
 
     instance = new Redis(REDIS_URL, {
       maxRetriesPerRequest: 3,
