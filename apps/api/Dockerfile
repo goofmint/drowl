@@ -14,7 +14,7 @@ FROM base AS builder
 WORKDIR /app
 COPY . .
 COPY --from=deps /app/node_modules ./node_modules
-RUN pnpm --filter @drowl/core build || true
+RUN pnpm --filter @drowl/core build
 RUN pnpm --filter @drowl/api build
 
 FROM base AS runner

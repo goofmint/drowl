@@ -8,22 +8,25 @@ import Redis from "ioredis";
 const app = new Hono();
 
 // Database clients
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL environment variable is required");
+}
+
+if (!process.env.REDIS_URL) {
+  throw new Error("REDIS_URL environment variable is required");
+}
+
 const postgres = new Pool({
-  connectionString:
-    process.env.DATABASE_URL ||
-    "postgresql://drowl:drowl_dev_password@localhost:5432/drowl",
+  connectionString: process.env.DATABASE_URL,
 });
 
-const redis = new Redis(
-  process.env.REDIS_URL || "redis://:drowl_dev_password_redis@localhost:6379",
-  {
-    maxRetriesPerRequest: 3,
-    retryStrategy: (times) => {
-      if (times > 3) return null;
-      return Math.min(times * 50, 2000);
-    },
-  }
-);
+const redis = new Redis(process.env.REDIS_URL, {
+  maxRetriesPerRequest: 3,
+  retryStrategy: (times) => {
+    if (times > 3) return null;
+    return Math.min(times * 50, 2000);
+  },
+});
 
 // Middleware
 app.use("*", logger());

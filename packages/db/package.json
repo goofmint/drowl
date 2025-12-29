@@ -15,7 +15,7 @@
     "lint:fix": "echo 'No linting for SQL files'"
   },
   "dependencies": {
-    "node-pg-migrate": "^7.0.0",
+    "node-pg-migrate": "^8.0.4",
     "pg": "^8.11.0"
   },
   "devDependencies": {

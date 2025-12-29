@@ -13,7 +13,7 @@
     "lint:fix": "eslint src --ext .astro,.ts --fix"
   },
   "dependencies": {
-    "astro": "^4.0.0"
+    "astro": "^5.16.6"
   },
   "devDependencies": {
     "@astrojs/check": "^0.3.0",
