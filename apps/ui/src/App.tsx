@@ -17,17 +17,29 @@ interface HealthResponse {
   };
 }
 
+function isHealthCheck(data: unknown): data is HealthCheck {
+  if (typeof data !== "object" || data === null) return false;
+  const obj = data as Record<string, unknown>;
+  if (typeof obj.status !== "string") return false;
+  if (obj.message !== undefined && typeof obj.message !== "string") return false;
+  return true;
+}
+
 function isHealthResponse(data: unknown): data is HealthResponse {
   if (typeof data !== "object" || data === null) return false;
   const obj = data as Record<string, unknown>;
-  return (
-    typeof obj.status === "string" &&
-    typeof obj.service === "string" &&
-    typeof obj.version === "string" &&
-    typeof obj.timestamp === "string" &&
-    typeof obj.checks === "object" &&
-    obj.checks !== null
-  );
+  if (typeof obj.status !== "string") return false;
+  if (typeof obj.service !== "string") return false;
+  if (typeof obj.version !== "string") return false;
+  if (typeof obj.timestamp !== "string") return false;
+  if (typeof obj.checks !== "object" || obj.checks === null) return false;
+
+  const checks = obj.checks as Record<string, unknown>;
+  if (!isHealthCheck(checks.api)) return false;
+  if (!isHealthCheck(checks.postgres)) return false;
+  if (!isHealthCheck(checks.redis)) return false;
+
+  return true;
 }
 
 function App() {
