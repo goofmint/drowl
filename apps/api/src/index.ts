@@ -6,11 +6,7 @@ import { cors } from "hono/cors";
 import { env } from "hono/adapter";
 import { Pool } from "pg";
 import Redis from "ioredis";
-import eventsRoutes from "./routes/events.js";
-import identitiesRoutes from "./routes/identities.js";
-import keywordsRoutes from "./routes/keywords.js";
-import jobsRoutes from "./routes/jobs.js";
-import pluginsRoutes from "./routes/plugins.js";
+import apiRoutes from "./routes/api.js";
 
 type Env = {
   DATABASE_URL: string;
@@ -121,7 +117,7 @@ app.get("/health", async (c) => {
   });
 });
 
-// API routes
+// Root route
 app.get("/", (c) => {
   return c.json({
     message: "drowl Control Plane API",
@@ -131,11 +127,7 @@ app.get("/", (c) => {
 });
 
 // Mount API routes
-app.route("/api/events", eventsRoutes);
-app.route("/api/identities", identitiesRoutes);
-app.route("/api/keywords", keywordsRoutes);
-app.route("/api/jobs", jobsRoutes);
-app.route("/api/plugins", pluginsRoutes);
+app.route("/api", apiRoutes);
 
 // Start server
 // Note: For Node.js startup, we need to get port/host from process.env
