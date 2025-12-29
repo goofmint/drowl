@@ -2,37 +2,50 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { cors } from "hono/cors";
-import { env as getEnv } from "hono/adapter";
+import { env } from "hono/adapter";
 import { Pool } from "pg";
 import Redis from "ioredis";
-import type { Env } from "./config.js";
-import { validateEnv } from "./config.js";
+
+type Env = {
+  DATABASE_URL: string;
+  REDIS_URL: string;
+};
 
 const app = new Hono<{ Bindings: Env }>();
 
-// Initialize database clients using a dummy context to get env vars
-// In production, these would be initialized per-request or using connection pooling
-let postgres: Pool;
-let redis: Redis;
+// Database clients - initialized on first request
+let postgres: Pool | null = null;
+let redis: Redis | null = null;
 
-// Startup initialization - get env vars without context
-// Note: In Node.js, hono/adapter's env() falls back to process.env
-const startupEnv = getEnv<Env>({} as any);
-validateEnv(startupEnv);
+// Middleware - initialize database clients once
+app.use("*", async (c, next) => {
+  if (!postgres || !redis) {
+    const { DATABASE_URL, REDIS_URL } = env<Env>(c);
 
-postgres = new Pool({
-  connectionString: startupEnv.DATABASE_URL,
+    if (!DATABASE_URL) {
+      throw new Error("DATABASE_URL environment variable is required");
+    }
+
+    if (!REDIS_URL) {
+      throw new Error("REDIS_URL environment variable is required");
+    }
+
+    postgres = new Pool({
+      connectionString: DATABASE_URL,
+    });
+
+    redis = new Redis(REDIS_URL, {
+      maxRetriesPerRequest: 3,
+      retryStrategy: (times) => {
+        if (times > 3) return null;
+        return Math.min(times * 50, 2000);
+      },
+    });
+  }
+
+  await next();
 });
 
-redis = new Redis(startupEnv.REDIS_URL, {
-  maxRetriesPerRequest: 3,
-  retryStrategy: (times) => {
-    if (times > 3) return null;
-    return Math.min(times * 50, 2000);
-  },
-});
-
-// Middleware
 app.use("*", logger());
 app.use(
   "*",
@@ -51,33 +64,37 @@ app.get("/health", async (c) => {
   };
 
   // Check PostgreSQL
-  try {
-    const result = await postgres.query("SELECT NOW()");
-    checks.postgres = {
-      status: "ok",
-      message: `Connected - ${result.rows[0].now}`,
-    };
-  } catch (error) {
-    checks.postgres = {
-      status: "error",
-      message: error instanceof Error ? error.message : "Connection failed",
-    };
+  if (postgres) {
+    try {
+      const result = await postgres.query("SELECT NOW()");
+      checks.postgres = {
+        status: "ok",
+        message: `Connected - ${result.rows[0].now}`,
+      };
+    } catch (error) {
+      checks.postgres = {
+        status: "error",
+        message: error instanceof Error ? error.message : "Connection failed",
+      };
+    }
   }
 
   // Check Redis
-  try {
-    await redis.ping();
-    const info = await redis.info("server");
-    const version = info.match(/redis_version:([^\r\n]+)/)?.[1] || "unknown";
-    checks.redis = {
-      status: "ok",
-      message: `Connected - Redis ${version}`,
-    };
-  } catch (error) {
-    checks.redis = {
-      status: "error",
-      message: error instanceof Error ? error.message : "Connection failed",
-    };
+  if (redis) {
+    try {
+      await redis.ping();
+      const info = await redis.info("server");
+      const version = info.match(/redis_version:([^\r\n]+)/)?.[1] || "unknown";
+      checks.redis = {
+        status: "ok",
+        message: `Connected - Redis ${version}`,
+      };
+    } catch (error) {
+      checks.redis = {
+        status: "error",
+        message: error instanceof Error ? error.message : "Connection failed",
+      };
+    }
   }
 
   const allOk = Object.values(checks).every((check) => check.status === "ok");
@@ -124,8 +141,10 @@ api.get("/plugins", (c) => {
 });
 
 // Start server
-const port = Number(startupEnv.API_PORT || "3001");
-const host = startupEnv.API_HOST || "0.0.0.0";
+// Note: For Node.js startup, we need to get port/host from process.env
+// This is the only place where process.env is used directly
+const port = Number(process.env.API_PORT || "3001");
+const host = process.env.API_HOST || "0.0.0.0";
 
 console.log(`🚀 drowl API server starting on ${host}:${port}`);
 
