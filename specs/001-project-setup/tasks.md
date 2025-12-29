@@ -26,11 +26,11 @@
 
 **Purpose**: Project initialization and monorepo structure
 
-- [ ] T001 Create monorepo directory structure (apps/, packages/, plugins/, infra/)
-- [ ] T002 Initialize pnpm workspace configuration in pnpm-workspace.yaml
-- [ ] T003 Create root package.json with workspace scripts (dev, lint, typecheck, format)
-- [ ] T004 Create root tsconfig.json with shared TypeScript configuration
-- [ ] T005 Create .gitignore excluding node_modules, dist, .env, OS files
+- [X] T001 Create monorepo directory structure (apps/, packages/, plugins/, infra/)
+- [X] T002 Initialize pnpm workspace configuration in pnpm-workspace.yaml
+- [X] T003 Create root package.json with workspace scripts (dev, lint, typecheck, format)
+- [X] T004 Create root tsconfig.json with shared TypeScript configuration
+- [X] T005 Create .gitignore excluding node_modules, dist, .env, OS files
 
 ---
 

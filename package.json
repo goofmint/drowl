@@ -1,0 +1,34 @@
+{
+  "name": "drowl",
+  "version": "0.1.0",
+  "private": true,
+  "description": "DevRel ROI可視化基盤 (OSS + SaaS)",
+  "scripts": {
+    "dev": "pnpm --parallel --stream -r dev",
+    "dev:api": "pnpm --filter @drowl/api dev",
+    "dev:worker": "pnpm --filter @drowl/worker dev",
+    "dev:ui": "pnpm --filter @drowl/ui dev",
+    "dev:landing": "pnpm --filter @drowl/landing dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "lint:fix": "pnpm -r lint:fix",
+    "typecheck": "pnpm -r typecheck",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yaml,yml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yaml,yml}\"",
+    "test": "pnpm -r test",
+    "clean": "pnpm -r clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0",
+    "husky": "^8.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.0.0"
+}
