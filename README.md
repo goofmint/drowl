@@ -77,64 +77,65 @@ sudo usermod -aG docker $USER
 
 ## Getting Started
 
-### 1. Clone the Repository
+### Quick Start (OSS Docker Mode)
 
 ```bash
+# 1. Clone the repository
 git clone https://github.com/your-org/drowl.git
 cd drowl
-```
 
-### 2. Install Dependencies
-
-```bash
-pnpm install
-```
-
-This will install dependencies for all workspace packages.
-
-### 3. Set Up Docker Services
-
-```bash
-# Copy environment variables
+# 2. Set up environment
 cd infra/docker
 cp .env.example .env
 
-# Generate SSL certificates for local HTTPS
+# 3. Generate SSL certificates (optional, for HTTPS)
 cd nginx/certs
 bash generate-certs.sh
 cd ../../
 
-# Add drowl.test to /etc/hosts
+# 4. Add to /etc/hosts (optional, for drowl.test domain)
 echo "127.0.0.1 drowl.test" | sudo tee -a /etc/hosts
 
-# Start services
-docker-compose up -d
+# 5. Start everything with Docker
+docker-compose up
 ```
 
-This starts:
-- PostgreSQL 16 on port 5432
-- MinIO on ports 9000 (API) and 9001 (Console)
-- Redis 7 on port 6379
-- nginx on ports 80 and 443
+That's it! Everything runs in Docker:
+- **PostgreSQL 16** on port 5432
+- **MinIO** on ports 9000 (API) and 9001 (Console)
+- **Redis 7** on port 6379
+- **Database migrations** run automatically on startup
+- **API** (Control Plane) on port 3001
+- **Worker** (Data Plane) on port 3002
+- **UI** (Dashboard) on port 3000 or https://drowl.test
+- **Landing** (Marketing) on port 4321
+- **nginx** reverse proxy on ports 80 and 443
 
-### 4. Run Database Migrations
+### Development Mode (Local pnpm)
+
+For faster hot-reload during development:
 
 ```bash
+# 1. Install dependencies
+pnpm install
+
+# 2. Start only infrastructure services
+cd infra/docker
+docker-compose up postgres redis minio -d
+
+# 3. Run migrations
 cd ../../packages/db
 pnpm migrate:up
-```
 
-### 5. Start Development Servers
-
-```bash
-# From repository root
+# 4. Start dev servers (with hot-reload)
+cd ../..
 pnpm dev
 ```
 
-This starts all applications in parallel:
+This starts applications with hot module replacement:
 - **API**: http://localhost:3001
 - **Worker**: http://localhost:3002
-- **UI**: http://localhost:3000 or https://drowl.test
+- **UI**: http://localhost:3000
 - **Landing**: http://localhost:4321
 
 To start individual applications:

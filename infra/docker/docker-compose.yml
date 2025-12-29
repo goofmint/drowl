@@ -64,6 +64,103 @@ services:
     networks:
       - drowl-network
 
+  # Database Migration - Run migrations on startup
+  migrate:
+    build:
+      context: ../../
+      dockerfile: packages/db/Dockerfile
+    container_name: drowl-migrate
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-drowl}:${POSTGRES_PASSWORD:-drowl_dev_password}@postgres:5432/${POSTGRES_DB:-drowl}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - drowl-network
+    restart: "no"
+
+  # API - Control Plane (Hono on Node.js)
+  api:
+    build:
+      context: ../../
+      dockerfile: apps/api/Dockerfile
+    container_name: drowl-api
+    restart: unless-stopped
+    environment:
+      API_PORT: 3001
+      API_HOST: 0.0.0.0
+      DATABASE_URL: postgresql://${POSTGRES_USER:-drowl}:${POSTGRES_PASSWORD:-drowl_dev_password}@postgres:5432/${POSTGRES_DB:-drowl}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-drowl_dev_password_redis}@redis:6379
+      NODE_ENV: production
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    networks:
+      - drowl-network
+
+  # Worker - Data Plane (Background job processor)
+  worker:
+    build:
+      context: ../../
+      dockerfile: apps/worker/Dockerfile
+    container_name: drowl-worker
+    restart: unless-stopped
+    environment:
+      WORKER_PORT: 3002
+      WORKER_HOST: 0.0.0.0
+      DATABASE_URL: postgresql://${POSTGRES_USER:-drowl}:${POSTGRES_PASSWORD:-drowl_dev_password}@postgres:5432/${POSTGRES_DB:-drowl}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-drowl_dev_password_redis}@redis:6379
+      S3_ENDPOINT: http://minio:9000
+      S3_ACCESS_KEY: ${MINIO_ROOT_USER:-drowl}
+      S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-drowl_dev_password_minio}
+      S3_BUCKET: drowl-events
+      NODE_ENV: production
+    ports:
+      - "3002:3002"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    networks:
+      - drowl-network
+
+  # UI - Product Dashboard (React + Vite SPA)
+  ui:
+    build:
+      context: ../../
+      dockerfile: apps/ui/Dockerfile
+    container_name: drowl-ui
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+    networks:
+      - drowl-network
+
+  # Landing - Marketing Site (Astro static site)
+  landing:
+    build:
+      context: ../../
+      dockerfile: apps/landing/Dockerfile
+    container_name: drowl-landing
+    restart: unless-stopped
+    ports:
+      - "4321:80"
+    networks:
+      - drowl-network
+
   # Nginx - Reverse proxy for drowl.test
   nginx:
     image: nginx:alpine
@@ -76,9 +173,9 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/certs:/etc/nginx/certs:ro
     depends_on:
-      - postgres
-      - minio
-      - redis
+      - api
+      - ui
+      - landing
     networks:
       - drowl-network
 
