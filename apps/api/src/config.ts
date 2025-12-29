@@ -2,7 +2,7 @@
  * Environment variable type definitions
  * Used with hono/adapter env() helper
  */
-export interface Env {
+export interface Env extends Record<string, string | undefined> {
   DATABASE_URL: string;
   REDIS_URL: string;
   API_PORT?: string;
