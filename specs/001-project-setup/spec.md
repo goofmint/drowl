@@ -103,4 +103,4 @@
 - LPページ（apps/landing）はAstroを使用する（静的サイト生成に最適なため）
 - プロダクトUI（apps/ui）はReact + Viteを使用する（SPA開発の標準スタック）
 - API・WorkerはHonoフレームワークを使用する（Cloudflare Workers互換性のため）
-- データベーススキーマは手動SQL管理から開始し、後のフェーズでマイグレーションツール（Knex/Drizzle）を導入する
+- データベーススキーマはマイグレーションツール（Drizzle）を導入する
