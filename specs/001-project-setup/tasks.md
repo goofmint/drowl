@@ -144,35 +144,35 @@
 
 ### ESLint Configuration for User Story 3
 
-- [ ] T059 [P] [US3] Create root .eslintrc.json with TypeScript ESLint rules
-- [ ] T060 [P] [US3] Add eslint dependencies to root package.json
-- [ ] T061 [P] [US3] Create .eslintignore excluding node_modules, dist, .astro
-- [ ] T062 [US3] Add pnpm lint script to root package.json running ESLint across workspaces
-- [ ] T063 [US3] Add pnpm lint:fix script to root package.json with --fix flag
+- [X] T059 [P] [US3] Create root .eslintrc.json with TypeScript ESLint rules
+- [X] T060 [P] [US3] Add eslint dependencies to root package.json
+- [X] T061 [P] [US3] Create .eslintignore excluding node_modules, dist, .astro
+- [X] T062 [US3] Add pnpm lint script to root package.json running ESLint across workspaces
+- [X] T063 [US3] Add pnpm lint:fix script to root package.json with --fix flag
 
 ### TypeScript Configuration for User Story 3
 
-- [ ] T064 [US3] Add pnpm typecheck script to root package.json running tsc --noEmit
-- [ ] T065 [US3] Verify typecheck runs across all workspaces (apps/*, packages/*)
-- [ ] T066 [US3] Add composite: true to tsconfig.json for project references
+- [X] T064 [US3] Add pnpm typecheck script to root package.json running tsc --noEmit
+- [X] T065 [US3] Verify typecheck runs across all workspaces (apps/*, packages/*)
+- [X] T066 [US3] Add composite: true to tsconfig.json for project references
 
 ### Prettier Configuration for User Story 3
 
-- [ ] T067 [P] [US3] Create root .prettierrc.json with formatting rules
-- [ ] T068 [P] [US3] Add prettier dependencies to root package.json
-- [ ] T069 [P] [US3] Create .prettierignore excluding node_modules, dist, pnpm-lock.yaml
-- [ ] T070 [US3] Add pnpm format script to root package.json running Prettier --write
-- [ ] T071 [US3] Add pnpm format:check script to root package.json running Prettier --check
+- [X] T067 [P] [US3] Create root .prettierrc.json with formatting rules
+- [X] T068 [P] [US3] Add prettier dependencies to root package.json
+- [X] T069 [P] [US3] Create .prettierignore excluding node_modules, dist, pnpm-lock.yaml
+- [X] T070 [US3] Add pnpm format script to root package.json running Prettier --write
+- [X] T071 [US3] Add pnpm format:check script to root package.json running Prettier --check
 
 ### Pre-commit Hook for User Story 3
 
-- [ ] T072 [US3] Add husky dependency to root package.json
-- [ ] T073 [US3] Initialize husky with pnpm exec husky install
-- [ ] T074 [US3] Create .husky/pre-commit running lint, typecheck, format:check
-- [ ] T075 [US3] Verify pre-commit hook blocks commits with lint errors
-- [ ] T076 [US3] Verify pre-commit hook blocks commits with type errors
-- [ ] T077 [US3] Verify pre-commit hook blocks commits with format violations
-- [ ] T078 [US3] Verify pre-commit hook passes with clean code
+- [X] T072 [US3] Add husky dependency to root package.json
+- [X] T073 [US3] Initialize husky with pnpm exec husky install
+- [X] T074 [US3] Create .husky/pre-commit running lint, typecheck, format:check
+- [X] T075 [US3] Verify pre-commit hook blocks commits with lint errors
+- [X] T076 [US3] Verify pre-commit hook blocks commits with type errors
+- [X] T077 [US3] Verify pre-commit hook blocks commits with format violations
+- [X] T078 [US3] Verify pre-commit hook passes with clean code
 
 **Checkpoint**: All user stories should now be independently functional - developers have full quality gates
 
