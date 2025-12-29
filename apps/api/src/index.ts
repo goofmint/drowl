@@ -6,6 +6,11 @@ import { cors } from "hono/cors";
 import { env } from "hono/adapter";
 import { Pool } from "pg";
 import Redis from "ioredis";
+import eventsRoutes from "./routes/events.js";
+import identitiesRoutes from "./routes/identities.js";
+import keywordsRoutes from "./routes/keywords.js";
+import jobsRoutes from "./routes/jobs.js";
+import pluginsRoutes from "./routes/plugins.js";
 
 type Env = {
   DATABASE_URL: string;
@@ -125,28 +130,12 @@ app.get("/", (c) => {
   });
 });
 
-// Placeholder API routes
-const api = app.basePath("/api");
-
-api.get("/events", (c) => {
-  return c.json({ message: "Events API - coming soon" });
-});
-
-api.get("/identities", (c) => {
-  return c.json({ message: "Identities API - coming soon" });
-});
-
-api.get("/keywords", (c) => {
-  return c.json({ message: "Keywords API - coming soon" });
-});
-
-api.get("/jobs", (c) => {
-  return c.json({ message: "Jobs API - coming soon" });
-});
-
-api.get("/plugins", (c) => {
-  return c.json({ message: "Plugins API - coming soon" });
-});
+// Mount API routes
+app.route("/api/events", eventsRoutes);
+app.route("/api/identities", identitiesRoutes);
+app.route("/api/keywords", keywordsRoutes);
+app.route("/api/jobs", jobsRoutes);
+app.route("/api/plugins", pluginsRoutes);
 
 // Start server
 // Note: For Node.js startup, we need to get port/host from process.env
