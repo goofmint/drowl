@@ -1,0 +1,25 @@
+{
+  "recommendations": [
+    // TypeScript & JavaScript
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+
+    // Astro
+    "astro-build.astro-vscode",
+
+    // Git
+    "eamodio.gitlens",
+
+    // Utilities
+    "christian-kohler.path-intellisense",
+    "usernamehw.errorlens",
+    "oderwat.indent-rainbow",
+
+    // Markdown
+    "yzhang.markdown-all-in-one",
+
+    // Docker
+    "ms-azuretools.vscode-docker"
+  ],
+  "unwantedRecommendations": []
+}

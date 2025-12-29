@@ -1,0 +1,22 @@
+{
+  "name": "@drowl/landing",
+  "version": "0.1.0",
+  "private": true,
+  "description": "drowl Landing Page - Marketing site built with Astro",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "typecheck": "astro check",
+    "lint": "eslint src --ext .astro,.ts",
+    "lint:fix": "eslint src --ext .astro,.ts --fix"
+  },
+  "dependencies": {
+    "astro": "^5.16.6"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.3.0",
+    "typescript": "^5.0.0"
+  }
+}

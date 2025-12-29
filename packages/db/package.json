@@ -1,0 +1,25 @@
+{
+  "name": "@drowl/db",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Database migrations and schema for drowl platform",
+  "type": "module",
+  "scripts": {
+    "migrate:up": "node-pg-migrate up",
+    "migrate:down": "node-pg-migrate down",
+    "migrate:create": "node-pg-migrate create",
+    "migrate:redo": "node-pg-migrate redo",
+    "migrate:status": "node-pg-migrate list",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo 'No linting for SQL files'",
+    "lint:fix": "echo 'No linting for SQL files'"
+  },
+  "dependencies": {
+    "node-pg-migrate": "^8.0.4",
+    "pg": "^8.11.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.0",
+    "typescript": "^5.0.0"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "development": {
+    "host": "localhost",
+    "port": 5432,
+    "database": "drowl",
+    "user": "drowl",
+    "password": "drowl_dev_password"
+  }
+}

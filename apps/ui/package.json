@@ -1,0 +1,28 @@
+{
+  "name": "@drowl/ui",
+  "version": "0.1.0",
+  "private": true,
+  "description": "drowl Product Dashboard - React SPA",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.22.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^5.1.2",
+    "eslint": "^8.0.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.0"
+  }
+}
