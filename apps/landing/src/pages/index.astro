@@ -1,0 +1,128 @@
+---
+const title = "drowl - DevRel ROI Visualization Platform";
+const description = "Measure and visualize the impact of your Developer Relations activities with drowl.";
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .container {
+        max-width: 800px;
+        padding: 2rem;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 1rem;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      p {
+        font-size: 1.25rem;
+        margin-bottom: 2rem;
+        color: #666;
+      }
+
+      .cta {
+        display: inline-block;
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        color: white;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        text-decoration: none;
+        border-radius: 0.5rem;
+        transition: transform 0.2s;
+      }
+
+      .cta:hover {
+        transform: translateY(-2px);
+      }
+
+      .features {
+        margin-top: 3rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        text-align: left;
+      }
+
+      .feature {
+        padding: 1rem;
+        background: #f9fafb;
+        border-radius: 0.5rem;
+      }
+
+      .feature h3 {
+        margin-bottom: 0.5rem;
+        color: #667eea;
+      }
+
+      .footer {
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px solid #e5e7eb;
+        color: #9ca3af;
+        font-size: 0.875rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>drowl</h1>
+      <p>{description}</p>
+      <a href="https://drowl.test" class="cta">Get Started</a>
+
+      <div class="features">
+        <div class="feature">
+          <h3>🎯 Event Tracking</h3>
+          <p>Track DevRel activities across GitHub, X, LinkedIn, and more.</p>
+        </div>
+        <div class="feature">
+          <h3>🔗 Identity Resolution</h3>
+          <p>Link identities across platforms to understand true impact.</p>
+        </div>
+        <div class="feature">
+          <h3>📊 Analytics</h3>
+          <p>Visualize ROI with powerful analytics and reporting.</p>
+        </div>
+        <div class="feature">
+          <h3>🔌 Plugin System</h3>
+          <p>Extend functionality with custom plugins.</p>
+        </div>
+      </div>
+
+      <div class="footer">
+        <p>drowl v0.1.0 - Open Source DevRel Platform</p>
+      </div>
+    </div>
+  </body>
+</html>

@@ -74,20 +74,20 @@
 
 ### Apps Setup for User Story 1
 
-- [ ] T024 [P] [US1] Initialize apps/api/package.json with Hono and dependencies
-- [ ] T025 [P] [US1] Create apps/api/src/index.ts with basic Hono server
-- [ ] T026 [P] [US1] Create apps/api/tsconfig.json referencing root tsconfig
-- [ ] T027 [P] [US1] Initialize apps/worker/package.json with Hono and dependencies
-- [ ] T028 [P] [US1] Create apps/worker/src/index.ts with worker entry point
-- [ ] T029 [P] [US1] Create apps/worker/tsconfig.json referencing root tsconfig
-- [ ] T030 [P] [US1] Initialize apps/ui/package.json with React, Vite, and dependencies
-- [ ] T031 [P] [US1] Create apps/ui/src/App.tsx with basic React component
-- [ ] T032 [P] [US1] Create apps/ui/vite.config.ts with dev server configuration
-- [ ] T033 [P] [US1] Create apps/ui/tsconfig.json referencing root tsconfig
-- [ ] T034 [P] [US1] Initialize apps/landing/package.json with Astro and dependencies
-- [ ] T035 [P] [US1] Create apps/landing/src/pages/index.astro with landing page
-- [ ] T036 [P] [US1] Create apps/landing/astro.config.mjs with configuration
-- [ ] T037 [P] [US1] Create apps/landing/tsconfig.json referencing root tsconfig
+- [X] T024 [P] [US1] Initialize apps/api/package.json with Hono and dependencies
+- [X] T025 [P] [US1] Create apps/api/src/index.ts with basic Hono server
+- [X] T026 [P] [US1] Create apps/api/tsconfig.json referencing root tsconfig
+- [X] T027 [P] [US1] Initialize apps/worker/package.json with Hono and dependencies
+- [X] T028 [P] [US1] Create apps/worker/src/index.ts with worker entry point
+- [X] T029 [P] [US1] Create apps/worker/tsconfig.json referencing root tsconfig
+- [X] T030 [P] [US1] Initialize apps/ui/package.json with React, Vite, and dependencies
+- [X] T031 [P] [US1] Create apps/ui/src/App.tsx with basic React component
+- [X] T032 [P] [US1] Create apps/ui/vite.config.ts with dev server configuration
+- [X] T033 [P] [US1] Create apps/ui/tsconfig.json referencing root tsconfig
+- [X] T034 [P] [US1] Initialize apps/landing/package.json with Astro and dependencies
+- [X] T035 [P] [US1] Create apps/landing/src/pages/index.astro with landing page
+- [X] T036 [P] [US1] Create apps/landing/astro.config.mjs with configuration
+- [X] T037 [P] [US1] Create apps/landing/tsconfig.json referencing root tsconfig
 
 ### Workspace Scripts for User Story 1
 
