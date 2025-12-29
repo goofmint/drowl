@@ -1,0 +1,95 @@
+version: '3.9'
+
+services:
+  # PostgreSQL 16 - Primary database
+  postgres:
+    image: postgres:16-alpine
+    container_name: drowl-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-drowl}
+      POSTGRES_USER: ${POSTGRES_USER:-drowl}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-drowl_dev_password}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=C"
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-drowl} -d ${POSTGRES_DB:-drowl}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - drowl-network
+
+  # MinIO - S3-compatible object storage for raw event data
+  minio:
+    image: minio/minio:latest
+    container_name: drowl-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-drowl}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-drowl_dev_password_minio}
+    ports:
+      - "${MINIO_API_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - drowl-network
+
+  # Redis 7 - Cache and job queue
+  redis:
+    image: redis:7-alpine
+    container_name: drowl-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-drowl_dev_password_redis}
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - drowl-network
+
+  # Nginx - Reverse proxy for drowl.test
+  nginx:
+    image: nginx:alpine
+    container_name: drowl-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - postgres
+      - minio
+      - redis
+    networks:
+      - drowl-network
+
+volumes:
+  postgres_data:
+    driver: local
+  minio_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  drowl-network:
+    driver: bridge

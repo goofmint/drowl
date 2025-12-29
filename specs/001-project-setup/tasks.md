@@ -66,11 +66,11 @@
 
 ### Docker Infrastructure for User Story 1
 
-- [ ] T019 [P] [US1] Create infra/docker/docker-compose.yml with postgres, minio, redis services
-- [ ] T020 [P] [US1] Create infra/docker/postgres/init.sql with database initialization
-- [ ] T021 [P] [US1] Create infra/docker/.env.example with default environment variables
-- [ ] T022 [P] [US1] Create infra/docker/nginx/nginx.conf with reverse proxy for drowl.test
-- [ ] T023 [P] [US1] Create infra/docker/nginx/certs/generate-certs.sh for local HTTPS
+- [X] T019 [P] [US1] Create infra/docker/docker-compose.yml with postgres, minio, redis services
+- [X] T020 [P] [US1] Create infra/docker/postgres/init.sql with database initialization
+- [X] T021 [P] [US1] Create infra/docker/.env.example with default environment variables
+- [X] T022 [P] [US1] Create infra/docker/nginx/nginx.conf with reverse proxy for drowl.test
+- [X] T023 [P] [US1] Create infra/docker/nginx/certs/generate-certs.sh for local HTTPS
 
 ### Apps Setup for User Story 1
 
