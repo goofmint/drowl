@@ -110,27 +110,27 @@
 
 ### Root Documentation for User Story 2
 
-- [ ] T044 [US2] Create README.md with project overview and folder structure section
-- [ ] T045 [US2] Add setup instructions to README.md (Node.js, pnpm, Docker prerequisites)
-- [ ] T046 [US2] Add development commands to README.md (pnpm dev, lint, typecheck, format)
-- [ ] T047 [US2] Add folder structure diagram to README.md explaining apps/, packages/, plugins/, infra/
+- [X] T044 [US2] Create README.md with project overview and folder structure section
+- [X] T045 [US2] Add setup instructions to README.md (Node.js, pnpm, Docker prerequisites)
+- [X] T046 [US2] Add development commands to README.md (pnpm dev, lint, typecheck, format)
+- [X] T047 [US2] Add folder structure diagram to README.md explaining apps/, packages/, plugins/, infra/
 
 ### Directory-Specific Documentation for User Story 2
 
-- [ ] T048 [P] [US2] Create apps/api/README.md explaining Control Plane API responsibilities
-- [ ] T049 [P] [US2] Create apps/worker/README.md explaining Data Plane Worker responsibilities
-- [ ] T050 [P] [US2] Create apps/ui/README.md explaining product dashboard responsibilities
-- [ ] T051 [P] [US2] Create apps/landing/README.md explaining LP/marketing site responsibilities
-- [ ] T052 [P] [US2] Create packages/core/README.md explaining shared types and schemas
-- [ ] T053 [P] [US2] Create packages/plugin-sdk/README.md with plugin development guide
-- [ ] T054 [P] [US2] Create plugins/README.md with plugin creation instructions and template
+- [X] T048 [P] [US2] Create apps/api/README.md explaining Control Plane API responsibilities
+- [X] T049 [P] [US2] Create apps/worker/README.md explaining Data Plane Worker responsibilities
+- [X] T050 [P] [US2] Create apps/ui/README.md explaining product dashboard responsibilities
+- [X] T051 [P] [US2] Create apps/landing/README.md explaining LP/marketing site responsibilities
+- [X] T052 [P] [US2] Create packages/core/README.md explaining shared types and schemas
+- [X] T053 [P] [US2] Create packages/plugin-sdk/README.md with plugin development guide
+- [X] T054 [P] [US2] Create plugins/README.md with plugin creation instructions and template
 
 ### Type Definition Discovery for User Story 2
 
-- [ ] T055 [US2] Verify packages/core/src/types/event.ts is discoverable via IDE navigation
-- [ ] T056 [US2] Verify packages/core/src/types/identity.ts is discoverable via IDE navigation
-- [ ] T057 [US2] Verify packages/core/src/types/keyword.ts is discoverable via IDE navigation
-- [ ] T058 [US2] Add inline JSDoc comments to all type definitions for better IDE hints
+- [X] T055 [US2] Verify packages/core/src/types/event.ts is discoverable via IDE navigation
+- [X] T056 [US2] Verify packages/core/src/types/identity.ts is discoverable via IDE navigation
+- [X] T057 [US2] Verify packages/core/src/types/keyword.ts is discoverable via IDE navigation
+- [X] T058 [US2] Add inline JSDoc comments to all type definitions for better IDE hints
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently - developers can navigate the monorepo structure
 
