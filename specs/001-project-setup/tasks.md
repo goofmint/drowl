@@ -91,8 +91,8 @@
 
 ### Workspace Scripts for User Story 1
 
-- [ ] T038 [US1] Add pnpm dev script to root package.json (runs all apps concurrently)
-- [ ] T039 [US1] Add pnpm dev:api, dev:worker, dev:ui, dev:landing scripts
+- [X] T038 [US1] Add pnpm dev script to root package.json (runs all apps concurrently)
+- [X] T039 [US1] Add pnpm dev:api, dev:worker, dev:ui, dev:landing scripts
 - [ ] T040 [US1] Verify pnpm install completes successfully across all workspaces
 - [ ] T041 [US1] Verify docker-compose up starts all services without errors
 - [ ] T042 [US1] Verify pnpm dev starts API on port 3001, UI on port 3000, Worker
