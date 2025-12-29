@@ -15,11 +15,13 @@
 
 **Independent Test**: `git clone` → `pnpm install` → `docker-compose up` を実行して、APIとUIがローカルで起動することを確認できる。
 
+Dockerではnginxリバースプロキシを使用し、`https://drowl.test`でUIにアクセスできることを確認できる。
+
 **Acceptance Scenarios**:
 
 1. **Given** リポジトリをクローンした状態、**When** `pnpm install`を実行、**Then** すべての依存関係がインストールされる
 2. **Given** 依存関係がインストールされた状態、**When** `docker-compose up`を実行、**Then** Postgres・MinIO・Redisが起動する
-3. **Given** インフラが起動した状態、**When** `pnpm dev`を実行、**Then** API・Worker・UIが起動し、ブラウザで`http://localhost:3000`にアクセスできる
+3. **Given** インフラが起動した状態、**When** `pnpm dev`を実行、**Then** API・Worker・UIが起動し、ブラウザで`https://drowl.test` でアクセスできる
 
 ---
 
@@ -104,3 +106,4 @@
 - プロダクトUI（apps/ui）はReact + Viteを使用する（SPA開発の標準スタック）
 - API・WorkerはHonoフレームワークを使用する（Cloudflare Workers互換性のため）
 - データベーススキーマはマイグレーションツール（Drizzle）を導入する
+- package.jsonのライブラリ追加や更新は常にpnpmを使用する（直接バージョンを指定しない）
