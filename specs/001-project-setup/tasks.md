@@ -40,19 +40,19 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T006 [P] Create packages/core/package.json with TypeScript and Zod dependencies
-- [ ] T007 [P] Define Event type in packages/core/src/types/event.ts
-- [ ] T008 [P] Define Identity type in packages/core/src/types/identity.ts
-- [ ] T009 [P] Define IdentityLink type in packages/core/src/types/identity.ts
-- [ ] T010 [P] Define Keyword type in packages/core/src/types/keyword.ts
-- [ ] T011 [P] Define Job type in packages/core/src/types/job.ts
-- [ ] T012 [P] Create packages/core/src/index.ts exporting all types
-- [ ] T013 [P] Create packages/plugin-sdk/package.json referencing @drowl/core
-- [ ] T014 [P] Define PluginManifest type in packages/plugin-sdk/src/types/manifest.ts
-- [ ] T015 [P] Create BasePlugin abstract class in packages/plugin-sdk/src/base-plugin.ts
-- [ ] T016 [P] Create packages/plugin-sdk/src/index.ts exporting SDK components
-- [ ] T017 Create packages/db/migrations/001_initial.sql with basic schema
-- [ ] T018 Create packages/db/package.json with migration tooling
+- [X] T006 [P] Create packages/core/package.json with TypeScript and Zod dependencies
+- [X] T007 [P] Define Event type in packages/core/src/types/event.ts
+- [X] T008 [P] Define Identity type in packages/core/src/types/identity.ts
+- [X] T009 [P] Define IdentityLink type in packages/core/src/types/identity.ts
+- [X] T010 [P] Define Keyword type in packages/core/src/types/keyword.ts
+- [X] T011 [P] Define Job type in packages/core/src/types/job.ts
+- [X] T012 [P] Create packages/core/src/index.ts exporting all types
+- [X] T013 [P] Create packages/plugin-sdk/package.json referencing @drowl/core
+- [X] T014 [P] Define PluginManifest type in packages/plugin-sdk/src/types/manifest.ts
+- [X] T015 [P] Create BasePlugin abstract class in packages/plugin-sdk/src/base-plugin.ts
+- [X] T016 [P] Create packages/plugin-sdk/src/index.ts exporting SDK components
+- [X] T017 Create packages/db/migrations/001_initial.sql with basic schema
+- [X] T018 Create packages/db/package.json with migration tooling
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
