@@ -182,14 +182,14 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T079 [P] Add LICENSE file (MIT or Apache 2.0)
-- [ ] T080 [P] Add CONTRIBUTING.md with development workflow
-- [ ] T081 [P] Create .vscode/settings.json with recommended extensions
-- [ ] T082 [P] Create .vscode/extensions.json recommending ESLint, Prettier, TypeScript
-- [ ] T083 Run pnpm lint && pnpm typecheck && pnpm format:check to validate all quality gates
-- [ ] T084 Create GitHub Actions workflow (.github/workflows/ci.yml) running lint, typecheck, format:check
-- [ ] T085 Verify docker-compose up works on clean checkout
-- [ ] T086 Verify pnpm install && pnpm dev completes within 5 minutes (SC-001)
+- [X] T079 [P] Add LICENSE file (MIT or Apache 2.0)
+- [X] T080 [P] Add CONTRIBUTING.md with development workflow
+- [X] T081 [P] Create .vscode/settings.json with recommended extensions
+- [X] T082 [P] Create .vscode/extensions.json recommending ESLint, Prettier, TypeScript
+- [X] T083 Run pnpm lint && pnpm typecheck && pnpm format:check to validate all quality gates
+- [X] T084 Create GitHub Actions workflow (.github/workflows/ci.yml) running lint, typecheck, format:check
+- [X] T085 Verify docker-compose up works on clean checkout
+- [X] T086 Verify pnpm install && pnpm dev completes within 5 minutes (SC-001)
 
 ---
 
