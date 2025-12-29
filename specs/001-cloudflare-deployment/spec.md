@@ -73,11 +73,7 @@
 
 ### Edge Cases
 
-- **DNSプロパゲーション中のアクセス**: ドメイン設定変更後、DNS伝播が完了する前にアクセスした場合、一時的に古いIPアドレスまたはエラーページが表示される可能性がある。最大48時間のTTLを考慮する必要がある。
-- **Cloudflareダウンタイム**: Cloudflareサービスに障害が発生した場合、すべてのサブドメインにアクセスできなくなる。フォールバック戦略またはステータスページが必要。
-- **デプロイ中のダウンタイム**: 新バージョンのデプロイ中、一時的にサービスが利用できなくなる可能性がある。ブルーグリーンデプロイまたはローリングアップデートでダウンタイムを最小化する必要がある。
 - **APIリクエストの失敗**: app.drowl.dev から api.drowl.dev へのリクエストが失敗した場合、ユーザーにエラーメッセージを表示し、リトライオプションを提供する必要がある。
-- **大量トラフィック**: 予期しないトラフィックスパイク時、Cloudflareのレート制限またはDDoS保護が発動する可能性がある。適切なレート制限ポリシーとキャッシュ戦略が必要。
 
 ## Requirements *(mandatory)*
 
@@ -87,21 +83,15 @@
 - **FR-002**: システムはapi.drowl.devドメインでAPIアプリケーション（Control Plane）を配信しなければならない
 - **FR-003**: システムはapp.drowl.devドメインでuiアプリケーション（Dashboard）を配信しなければならない
 - **FR-004**: システムはworker.drowl.devドメインでworkerアプリケーション（Data Plane）を配信しなければならない
-- **FR-005**: すべてのドメインはHTTPSで保護され、有効なSSL/TLS証明書を使用しなければならない
-- **FR-006**: HTTPリクエストは自動的にHTTPSへリダイレクトされなければならない
 - **FR-007**: app.drowl.devからapi.drowl.devへのCORSリクエストが正常に処理されなければならない
 - **FR-008**: 各アプリケーションは独立してデプロイ可能でなければならない（ブルーグリーンまたはローリングアップデート）
-- **FR-009**: DNSレコードは各サブドメインを正しいCloudflareエンドポイントにルーティングしなければならない
 - **FR-010**: システムは環境変数を通じてドメイン設定を管理しなければならない（ハードコーディングの回避）
-- **FR-011**: 各アプリケーションはヘルスチェックエンドポイント（/health）を提供し、デプロイ後の検証を可能にしなければならない
 - **FR-012**: Cloudflareのキャッシュポリシーは静的アセット（landing、ui）に対して最適化され、動的コンテンツ（api、worker）はキャッシュされないようにしなければならない
 
 ### Key Entities
 
 - **Domain**: drowl.dev（ルートドメイン）および4つのサブドメイン（landing, api, app, worker）を表す。各ドメインは特定のアプリケーションにマッピングされる。
 - **Application**: landing（Astro静的サイト）、api（Hono on Cloudflare Workers）、ui（React SPA）、worker（バックグラウンドジョブプロセッサー）の4つのアプリケーション。各アプリケーションは独立したデプロイメントユニット。
-- **SSL Certificate**: Cloudflareが管理するSSL/TLS証明書。各ドメインに対して自動発行・更新される。
-- **DNS Record**: 各サブドメインをCloudflareのエッジネットワークにルーティングするためのAレコードまたはCNAMEレコード。
 
 ## Success Criteria *(mandatory)*
 
@@ -112,22 +102,3 @@
 - **SC-003**: api.drowl.dev のヘルスチェックエンドポイントが99.9%の稼働率を達成する
 - **SC-004**: app.drowl.dev から api.drowl.dev へのAPIリクエストの95%が500ms以内に完了する
 - **SC-005**: デプロイメント設定が完了し、各サブドメインで対応するアプリケーションが正常にアクセス可能である
-
-## Assumptions
-
-1. **Cloudflareアカウント**: 既にCloudflareアカウントが存在し、drowl.devドメインがCloudflareで管理されていると仮定
-2. **ドメイン所有権**: drowl.devドメインの所有権を持ち、ネームサーバーをCloudflareに変更する権限があると仮定
-3. **Cloudflare Workersプラン**: api.drowl.devとworker.drowl.devをCloudflare Workers上で動作させるため、適切なCloudflare Workers有料プランに加入していると仮定
-4. **Cloudflare Pagesプラン**: landing（Astro）とui（React SPA）をCloudflare Pagesでホストするため、Cloudflare Pagesの利用が可能であると仮定
-5. **環境変数管理**: Cloudflare Workers/Pagesのダッシュボードまたはwrangler CLIを通じて環境変数を設定できると仮定
-6. **CI/CD統合**: GitHubリポジトリとCloudflareの連携が設定され、mainブランチへのプッシュで自動デプロイされると仮定
-7. **データベース接続**: apiとworkerはCloudflare Workersから外部PostgreSQL/Redis/MinIOに接続するため、接続可能なネットワーク構成であると仮定
-8. **CORS設定**: api.drowl.devはapp.drowl.devからのCORSリクエストを許可するよう設定されると仮定
-
-## Out of Scope
-
-- **カスタムメール設定**: @drowl.dev メールアドレスの設定は本フィーチャーの範囲外
-- **CDN以外のCloudflare機能**: WAF、Rate Limiting、Bot Managementなどの高度なCloudflare機能の詳細設定は範囲外
-- **バックエンドインフラのCloudflare移行**: PostgreSQL、Redis、MinIOをCloudflareサービス（D1、R2、KVなど）に移行することは範囲外。既存のDockerベースインフラを維持
-- **ドメイン購入**: drowl.devドメインが既に購入済みであることを前提とし、新規購入は範囲外
-- **マルチリージョンデプロイ**: 特定リージョンへのデプロイメント制限や複数リージョンへの明示的な配置は範囲外（Cloudflareのグローバルネットワークに依存）
