@@ -6,7 +6,7 @@ import { cors } from "hono/cors";
 import { env } from "hono/adapter";
 import { Pool } from "pg";
 import Redis from "ioredis";
-import apiRoutes from "./routes/api.js";
+import apiRoutes from "./api/index.js";
 
 type Env = {
   DATABASE_URL: string;
