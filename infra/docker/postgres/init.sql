@@ -6,8 +6,22 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pg_trgm"; -- For text search performance
 
--- Grant necessary permissions
-GRANT ALL PRIVILEGES ON DATABASE drowl TO drowl;
+-- Grant minimal privileges (least-privilege principle)
+GRANT CONNECT ON DATABASE drowl TO drowl;
+
+\c drowl
+
+-- Grant schema usage
+GRANT USAGE ON SCHEMA public TO drowl;
+
+-- Grant table privileges (will apply to future tables via ALTER DEFAULT PRIVILEGES)
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO drowl;
+
+-- Grant sequence privileges (for auto-increment columns)
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO drowl;
+
+-- Grant execute on functions (if needed)
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT EXECUTE ON FUNCTIONS TO drowl;
 
 -- Display initialization completion message
 DO $$

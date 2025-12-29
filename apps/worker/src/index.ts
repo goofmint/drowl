@@ -1,6 +1,9 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
+import pkg from "../package.json" with { type: "json" };
+
+const VERSION = process.env.APP_VERSION || pkg.version;
 
 const app = new Hono();
 
@@ -12,7 +15,7 @@ app.get("/health", (c) => {
   return c.json({
     status: "ok",
     service: "drowl-worker",
-    version: "0.1.0",
+    version: VERSION,
     timestamp: new Date().toISOString(),
   });
 });
@@ -21,7 +24,7 @@ app.get("/health", (c) => {
 app.get("/", (c) => {
   return c.json({
     message: "drowl Data Plane Worker",
-    version: "0.1.0",
+    version: VERSION,
     status: "running",
     workers: {
       eventIngestion: "idle",

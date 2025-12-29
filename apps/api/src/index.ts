@@ -7,11 +7,14 @@ import { env } from "hono/adapter";
 import { Pool } from "pg";
 import Redis from "ioredis";
 import apiRoutes from "./api/index.js";
+import pkg from "../package.json" with { type: "json" };
 
 type Env = {
   DATABASE_URL: string;
   REDIS_URL: string;
 };
+
+const VERSION = process.env.APP_VERSION || pkg.version;
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -28,6 +31,15 @@ const getPostgres = (() => {
     if (!DATABASE_URL) throw new Error("DATABASE_URL environment variable is required");
 
     instance = new Pool({ connectionString: DATABASE_URL });
+
+    instance.on("error", (err) => {
+      console.error("Unexpected PostgreSQL error:", err);
+      if (err.message.includes("connection") || err.message.includes("ECONNREFUSED")) {
+        console.error("Fatal PostgreSQL error, shutting down...");
+        process.exit(1);
+      }
+    });
+
     return instance;
   };
 })();
@@ -51,6 +63,15 @@ const getRedis = (() => {
         return Math.min(times * 50, 2000);
       },
     });
+
+    instance.on("error", (err) => {
+      console.error("Redis error:", err);
+      if (err.message.includes("ECONNREFUSED") || err.message.includes("READONLY")) {
+        console.error("Fatal Redis error, shutting down...");
+        process.exit(1);
+      }
+    });
+
     return instance;
   };
 })();
@@ -75,10 +96,10 @@ app.get("/health", async (c) => {
   // Check PostgreSQL
   try {
     const postgres = getPostgres(c);
-    const result = await postgres.query("SELECT NOW()");
+    const result = await postgres.query<{ now: Date }>("SELECT NOW()");
     checks.postgres = {
       status: "ok",
-      message: `Connected - ${result.rows[0].now}`,
+      message: `Connected - ${result.rows[0].now.toISOString()}`,
     };
   } catch (error) {
     checks.postgres = {
@@ -106,10 +127,12 @@ app.get("/health", async (c) => {
 
   const allOk = Object.values(checks).every((check) => check.status === "ok");
 
+  if (!allOk) c.status(503);
+
   return c.json({
     status: allOk ? "ok" : "degraded",
     service: "drowl-api",
-    version: "0.1.0",
+    version: VERSION,
     timestamp: new Date().toISOString(),
     checks,
   });
@@ -119,7 +142,7 @@ app.get("/health", async (c) => {
 app.get("/", (c) => {
   return c.json({
     message: "drowl Control Plane API",
-    version: "0.1.0",
+    version: VERSION,
     documentation: "/api/docs",
   });
 });

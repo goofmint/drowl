@@ -17,6 +17,19 @@ interface HealthResponse {
   };
 }
 
+function isHealthResponse(data: unknown): data is HealthResponse {
+  if (typeof data !== "object" || data === null) return false;
+  const obj = data as Record<string, unknown>;
+  return (
+    typeof obj.status === "string" &&
+    typeof obj.service === "string" &&
+    typeof obj.version === "string" &&
+    typeof obj.timestamp === "string" &&
+    typeof obj.checks === "object" &&
+    obj.checks !== null
+  );
+}
+
 function App() {
   const [health, setHealth] = useState<HealthResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -29,8 +42,11 @@ function App() {
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
         }
-        const data = await response.json();
-        setHealth(data);
+        const raw: unknown = await response.json();
+        if (!isHealthResponse(raw)) {
+          throw new Error("Invalid health response format");
+        }
+        setHealth(raw);
         setError(null);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch health");
@@ -39,8 +55,10 @@ function App() {
       }
     };
 
-    fetchHealth();
-    const interval = setInterval(fetchHealth, 5000); // Refresh every 5 seconds
+    void fetchHealth();
+    const interval = setInterval(() => {
+      void fetchHealth();
+    }, 5000);
 
     return () => clearInterval(interval);
   }, []);

@@ -79,7 +79,7 @@ export const PluginManifestSchema = z.object({
   name: z.string(),
 
   /** Plugin version (semver) */
-  version: z.string().regex(/^\d+\.\d+\.\d+/),
+  version: z.string().regex(/^\d+\.\d+\.\d+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$/),
 
   /** Plugin description */
   description: z.string(),
@@ -109,7 +109,7 @@ export const PluginManifestSchema = z.object({
   configSchema: z.array(ConfigFieldSchema).default([]),
 
   /** Minimum drowl platform version required (semver) */
-  minPlatformVersion: z.string().regex(/^\d+\.\d+\.\d+/),
+  minPlatformVersion: z.string().regex(/^\d+\.\d+\.\d+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$/),
 
   /** Plugin dependencies (other plugin IDs) */
   dependencies: z.array(z.string()).default([]),
