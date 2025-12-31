@@ -169,7 +169,8 @@ drowl can be deployed to Cloudflare for production hosting:
 2. GitHub repository secrets configured:
    - `CLOUDFLARE_API_TOKEN` - Cloudflare API token with Workers/Pages write permissions
    - `DATABASE_URL` - PostgreSQL connection string
-   - `REDIS_URL` - Redis connection string
+   - `REDIS_URL` - Redis connection string (HTTP-compatible Redis URL, e.g., Upstash)
+   - `REDIS_TOKEN` - Redis authentication token (for HTTP-compatible Redis)
    - `S3_ENDPOINT` - MinIO/S3 endpoint URL
    - `S3_ACCESS_KEY` - S3 access key
    - `S3_SECRET_KEY` - S3 secret key
@@ -193,8 +194,8 @@ wrangler pages deploy dist --project-name=drowl-ui
 
 # 4. Configure production secrets for Workers
 cd apps/api
-wrangler secret put DATABASE_URL --env production
 wrangler secret put REDIS_URL --env production
+wrangler secret put REDIS_TOKEN --env production
 wrangler secret put S3_ENDPOINT --env production
 wrangler secret put S3_ACCESS_KEY --env production
 wrangler secret put S3_SECRET_KEY --env production
@@ -202,6 +203,12 @@ wrangler secret put S3_BUCKET --env production
 
 cd apps/worker
 # Repeat secret configuration
+wrangler secret put REDIS_URL --env production
+wrangler secret put REDIS_TOKEN --env production
+wrangler secret put S3_ENDPOINT --env production
+wrangler secret put S3_ACCESS_KEY --env production
+wrangler secret put S3_SECRET_KEY --env production
+wrangler secret put S3_BUCKET --env production
 
 # 5. Deploy Workers (API/Worker)
 cd apps/api && wrangler deploy --env production

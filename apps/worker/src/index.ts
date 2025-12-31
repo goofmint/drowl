@@ -1,22 +1,79 @@
-import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
+import { Redis } from "@upstash/redis/cloudflare";
+import { sql } from "drizzle-orm";
+import { createDatabase } from "./db/index.js";
 import pkg from "../package.json" with { type: "json" };
 
-const VERSION = process.env.APP_VERSION || pkg.version;
+type Env = {
+  HYPERDRIVE: {
+    connectionString: string;
+  };
+  REDIS_URL: string;
+  REDIS_TOKEN: string;
+};
 
-const app = new Hono();
+const VERSION = pkg.version;
+
+const app = new Hono<{ Bindings: Env }>();
 
 // Middleware
 app.use("*", logger());
 
 // Health check endpoint
-app.get("/health", (c) => {
+app.get("/health", async (c) => {
+  const checks = {
+    worker: { status: "ok", message: "Worker is running" },
+    postgres: { status: "unknown", message: "" },
+    redis: { status: "unknown", message: "" },
+  };
+
+  // Check PostgreSQL via Hyperdrive
+  try {
+    const { db, sql: pgSql } = createDatabase(c.env.HYPERDRIVE.connectionString);
+    const result = await db.execute<{ now: Date }>(sql`SELECT NOW() as now`);
+    const now = result[0]?.now;
+    checks.postgres = {
+      status: "ok",
+      message: `Connected - ${now instanceof Date ? now.toISOString() : String(now)}`,
+    };
+    // Schedule connection cleanup
+    c.executionCtx.waitUntil(pgSql.end());
+  } catch (error) {
+    checks.postgres = {
+      status: "error",
+      message: error instanceof Error ? error.message : "Connection failed",
+    };
+  }
+
+  // Check Redis (HTTP-compatible: Upstash, etc)
+  try {
+    const redis = new Redis({
+      url: c.env.REDIS_URL,
+      token: c.env.REDIS_TOKEN,
+    });
+    const pong = await redis.ping();
+    checks.redis = {
+      status: "ok",
+      message: `Connected - ${pong}`,
+    };
+  } catch (error) {
+    checks.redis = {
+      status: "error",
+      message: error instanceof Error ? error.message : "Connection failed",
+    };
+  }
+
+  const allOk = Object.values(checks).every((check) => check.status === "ok");
+
+  if (!allOk) c.status(503);
+
   return c.json({
-    status: "ok",
+    status: allOk ? "ok" : "degraded",
     service: "drowl-worker",
     version: VERSION,
     timestamp: new Date().toISOString(),
+    checks,
   });
 });
 
@@ -45,19 +102,9 @@ app.post("/jobs/:jobId/process", (c) => {
   });
 });
 
-// Start worker server (for health checks and manual job triggering)
-const port = Number(process.env.WORKER_PORT) || 3002;
-const host = process.env.WORKER_HOST || "0.0.0.0";
-
-console.log(`🚀 drowl Worker server starting on ${host}:${port}`);
-console.log(`📊 Job processing: Ready to process background jobs`);
-
-// TODO: Initialize job queue (Bull) and workers
+// TODO: Initialize Cloudflare Queues for background job processing
 // TODO: Load and initialize plugins
-// TODO: Start scheduled tasks
+// TODO: Implement scheduled tasks via Cloudflare Cron Triggers
 
-serve({
-  fetch: app.fetch,
-  port,
-  hostname: host,
-});
+// Export for Cloudflare Workers
+export default app;

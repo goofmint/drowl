@@ -55,6 +55,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Build ${{ matrix.app }}
+        run: pnpm --filter @drowl/${{ matrix.app }} build
+
       - name: Deploy ${{ matrix.app }} to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:

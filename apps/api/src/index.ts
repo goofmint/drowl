@@ -40,13 +40,15 @@ app.get("/health", async (c) => {
 
   // Check PostgreSQL via Hyperdrive
   try {
-    const db = createDatabase(c.env.HYPERDRIVE.connectionString);
+    const { db, sql: pgSql } = createDatabase(c.env.HYPERDRIVE.connectionString);
     const result = await db.execute<{ now: Date }>(sql`SELECT NOW() as now`);
     const now = result[0]?.now;
     checks.postgres = {
       status: "ok",
       message: `Connected - ${now instanceof Date ? now.toISOString() : String(now)}`,
     };
+    // Schedule connection cleanup
+    c.executionCtx.waitUntil(pgSql.end());
   } catch (error) {
     checks.postgres = {
       status: "error",
