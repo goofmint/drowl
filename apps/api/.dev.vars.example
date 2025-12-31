@@ -1,0 +1,10 @@
+# Cloudflare Workers Local Development Environment Variables
+# Copy this file to .dev.vars and fill in your actual values
+# DO NOT commit .dev.vars to git
+
+DATABASE_URL=postgresql://drowl:drowl_dev_password@localhost:5432/drowl
+REDIS_URL=redis://:drowl_dev_password_redis@localhost:6379
+S3_ENDPOINT=http://localhost:9000
+S3_ACCESS_KEY=drowl
+S3_SECRET_KEY=drowl_dev_password_minio
+S3_BUCKET=drowl-events

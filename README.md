@@ -154,6 +154,92 @@ cd infra/docker
 docker-compose -f docker-compose.dev.yml down
 ```
 
+## Cloudflare Deployment
+
+drowl can be deployed to Cloudflare for production hosting:
+
+- **Landing (drowl.dev)**: Cloudflare Pages
+- **UI (app.drowl.dev)**: Cloudflare Pages
+- **API (api.drowl.dev)**: Cloudflare Workers
+- **Worker (worker.drowl.dev)**: Cloudflare Workers
+
+### Prerequisites
+
+1. Cloudflare account with `drowl.dev` domain configured
+2. GitHub repository secrets configured:
+   - `CLOUDFLARE_API_TOKEN` - Cloudflare API token with Workers/Pages write permissions
+   - `DATABASE_URL` - PostgreSQL connection string
+   - `REDIS_URL` - Redis connection string (HTTP-compatible Redis URL, e.g., Upstash)
+   - `REDIS_TOKEN` - Redis authentication token (for HTTP-compatible Redis)
+   - `S3_ENDPOINT` - MinIO/S3 endpoint URL
+   - `S3_ACCESS_KEY` - S3 access key
+   - `S3_SECRET_KEY` - S3 secret key
+   - `S3_BUCKET` - S3 bucket name (default: `drowl-events`)
+
+### Manual Deployment
+
+```bash
+# 1. Install wrangler CLI
+pnpm add -g wrangler
+
+# 2. Authenticate with Cloudflare
+wrangler login
+
+# 3. Deploy Pages (Landing/UI)
+cd apps/landing && pnpm build
+wrangler pages deploy dist --project-name=drowl-landing
+
+cd apps/ui && pnpm build
+wrangler pages deploy dist --project-name=drowl-ui
+
+# 4. Configure production secrets for Workers
+cd apps/api
+wrangler secret put REDIS_URL --env production
+wrangler secret put REDIS_TOKEN --env production
+wrangler secret put S3_ENDPOINT --env production
+wrangler secret put S3_ACCESS_KEY --env production
+wrangler secret put S3_SECRET_KEY --env production
+wrangler secret put S3_BUCKET --env production
+
+cd apps/worker
+# Repeat secret configuration
+wrangler secret put REDIS_URL --env production
+wrangler secret put REDIS_TOKEN --env production
+wrangler secret put S3_ENDPOINT --env production
+wrangler secret put S3_ACCESS_KEY --env production
+wrangler secret put S3_SECRET_KEY --env production
+wrangler secret put S3_BUCKET --env production
+
+# 5. Deploy Workers (API/Worker)
+cd apps/api && wrangler deploy --env production
+cd apps/worker && wrangler deploy --env production
+```
+
+### Automatic Deployment (CI/CD)
+
+Push to `main` branch triggers GitHub Actions workflow:
+1. Builds and deploys all 4 applications in parallel
+2. Runs health checks on all endpoints
+3. Fails if any deployment or health check fails
+
+See `.github/workflows/deploy-cloudflare.yml` for details.
+
+### Local Development with Wrangler
+
+```bash
+# 1. Copy environment variables
+cd apps/api && cp .dev.vars.example .dev.vars
+cd apps/worker && cp .dev.vars.example .dev.vars
+
+# 2. Edit .dev.vars with your local database credentials
+
+# 3. Start Workers locally
+cd apps/api && wrangler dev --env development
+cd apps/worker && wrangler dev --env development
+```
+
+For complete deployment instructions, see `/specs/001-cloudflare-deployment/quickstart.md`.
+
 ## Development Commands
 
 ### Running Applications

@@ -1,0 +1,23 @@
+name = "drowl-worker"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[env.production]
+name = "drowl-worker"
+routes = [
+  { pattern = "worker.drowl.dev/*", zone_name = "drowl.dev" }
+]
+vars = { NODE_ENV = "production" }
+
+[[env.production.hyperdrive]]
+binding = "HYPERDRIVE"
+id = "7290f7662ca04e0497a5ee388baa691f"
+
+[env.development]
+name = "drowl-worker-dev"
+vars = { NODE_ENV = "development" }
+
+[[env.development.hyperdrive]]
+binding = "HYPERDRIVE"
+id = "placeholder-hyperdrive-id"

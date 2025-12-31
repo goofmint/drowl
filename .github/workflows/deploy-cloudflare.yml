@@ -1,0 +1,82 @@
+name: Deploy to Cloudflare
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy-pages:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [landing, ui]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build ${{ matrix.app }}
+        run: pnpm --filter @drowl/${{ matrix.app }} build
+
+      - name: Deploy ${{ matrix.app }} to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          command: pages deploy apps/${{ matrix.app }}/dist --project-name=drowl-${{ matrix.app }}
+
+  deploy-workers:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [api, worker]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build ${{ matrix.app }}
+        run: pnpm --filter @drowl/${{ matrix.app }} build
+
+      - name: Deploy ${{ matrix.app }} to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          workingDirectory: apps/${{ matrix.app }}
+          command: deploy --env production
+
+  health-check:
+    needs: [deploy-pages, deploy-workers]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Landing
+        run: curl -f https://drowl.dev || exit 1
+
+      - name: Check Dashboard
+        run: curl -f https://app.drowl.dev || exit 1
+
+      - name: Check API
+        run: curl -f https://api.drowl.dev/health || exit 1
+
+      - name: Check Worker
+        run: curl -f https://worker.drowl.dev/health || exit 1
