@@ -1,6 +1,7 @@
 name = "drowl-api"
 main = "src/index.ts"
 compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
 
 [env.production]
 name = "drowl-api"
@@ -9,6 +10,14 @@ routes = [
 ]
 vars = { NODE_ENV = "production" }
 
+[[env.production.hyperdrive]]
+binding = "HYPERDRIVE"
+id = "7290f7662ca04e0497a5ee388baa691f"
+
 [env.development]
 name = "drowl-api-dev"
 vars = { NODE_ENV = "development" }
+
+[[env.development.hyperdrive]]
+binding = "HYPERDRIVE"
+id = "placeholder-hyperdrive-id"
