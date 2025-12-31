@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { Redis } from "@upstash/redis/cloudflare";
 import { sql } from "drizzle-orm";
-import { createDatabase } from "./db/index.js";
+import { createDatabase, type DatabaseConnection } from "./db/index.js";
 import pkg from "../package.json" with { type: "json" };
 
 type Env = {
@@ -14,6 +14,16 @@ type Env = {
 };
 
 const VERSION = pkg.version;
+
+// Module-level database connection (initialized lazily on first request)
+let dbConnection: DatabaseConnection | null = null;
+
+function getDatabase(connectionString: string): DatabaseConnection {
+  if (!dbConnection) {
+    dbConnection = createDatabase(connectionString);
+  }
+  return dbConnection;
+}
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -30,15 +40,13 @@ app.get("/health", async (c) => {
 
   // Check PostgreSQL via Hyperdrive
   try {
-    const { db, sql: pgSql } = createDatabase(c.env.HYPERDRIVE.connectionString);
+    const { db } = getDatabase(c.env.HYPERDRIVE.connectionString);
     const result = await db.execute<{ now: Date }>(sql`SELECT NOW() as now`);
     const now = result[0]?.now;
     checks.postgres = {
       status: "ok",
       message: `Connected - ${now instanceof Date ? now.toISOString() : String(now)}`,
     };
-    // Schedule connection cleanup
-    c.executionCtx.waitUntil(pgSql.end());
   } catch (error) {
     checks.postgres = {
       status: "error",
